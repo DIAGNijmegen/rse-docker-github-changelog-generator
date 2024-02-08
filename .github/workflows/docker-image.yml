@@ -8,5 +8,25 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
+    - name: Define tag and release names
+      run: |
+        echo "RELEASE_IMAGE_NAME=rse-github-changelog-generator:$(date --iso)" >> "$GITHUB_ENV"
+        echo "RELEASE_GITHUB_TAG=built-$(date --iso)" >> "$GITHUB_ENV"
+        echo "RELEASE_NAME=Release $(date --iso)" >> "$GITHUB_ENV"
     - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag rse-github-changelog-generator:$(date +%s)
+      run: docker build . --file Dockerfile --tag "$RELEASE_IMAGE_NAME"
+    - name: Export container
+      run: |
+        docker save "$RELEASE_IMAGE_NAME" | xz -T0 > "rse-github-changelog-generator.tar.xz"
+    - name: Bump version and push tag
+      uses: laputansoft/github-tag-action@v4.6
+      with:
+        github_token: ${{ env.github-token }}
+        tag: ${{ RELEASE_GITHUB_TAG }}
+    - name: Create the release
+      uses: elgohr/Github-Release-Action@v5
+      env:
+        GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
+      with:
+        title: ${{ RELEASE_NAME }}
+  
