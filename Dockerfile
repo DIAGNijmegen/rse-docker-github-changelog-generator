@@ -5,13 +5,13 @@ LABEL maintainer="ferrari.marco@gmail.com"
 SHELL ["/bin/ash", "-eo", "pipefail", "-c"]
 
 RUN apk add --no-cache \
-  git=2.30.2-r0
+  git
 
 WORKDIR /
 COPY Gemfile Gemfile
 RUN apk add --no-cache \
   --virtual .gem-installdeps \
-  build-base=0.5-r2 \
+  build-base \
   && gem install bundler --version 2.2.15 \
   && bundle config set --local system 'true' \
   && bundle install \
