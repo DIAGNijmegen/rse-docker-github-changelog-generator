@@ -21,7 +21,7 @@ jobs:
     - name: Bump version and push tag
       uses: laputansoft/github-tag-action@v4.6
       with:
-        github_token: ${{ env.github-token }}
+        github_token: ${{ secrets.GITHUB_TOKEN }}
         tag: ${{ env.RELEASE_GITHUB_TAG }}
     - name: Create the release
       uses: elgohr/Github-Release-Action@v5
