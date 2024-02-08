@@ -6,6 +6,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
     - uses: actions/checkout@v3
     - name: Define tag and release names
@@ -18,15 +20,8 @@ jobs:
     - name: Export container
       run: |
         docker save "$RELEASE_IMAGE_NAME" | xz -T0 > "rse-github-changelog-generator.tar.xz"
-    - name: Bump version and push tag
-      uses: laputansoft/github-tag-action@v4.6
+    - uses: ncipollo/release-action@v1.14.0
       with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
+        artifacts: "rse-github-changelog-generator.tar.xz"
+        name: ${{ env.RELEASE_NAME }} 
         tag: ${{ env.RELEASE_GITHUB_TAG }}
-    - name: Create the release
-      uses: elgohr/Github-Release-Action@v5
-      env:
-        GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
-      with:
-        title: ${{ env.RELEASE_NAME }}
-  
